@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Calculator, Beaker, Download } from "lucide-react";
 import { toast } from "sonner";
+import jsPDF from 'jspdf';
 
 const Index = () => {
   const [brix, setBrix] = useState<string>('');
@@ -42,11 +42,171 @@ const Index = () => {
   };
 
   const generatePDF = () => {
-    // Simula a geração do PDF
-    toast.success("PDF gerado com sucesso! Download iniciado.");
-    
-    // Aqui seria implementada a lógica real de geração de PDF
-    // Por exemplo, usando bibliotecas como jsPDF ou react-pdf
+    try {
+      const doc = new jsPDF();
+      
+      // Configurar fonte
+      doc.setFont('helvetica');
+      
+      // Título principal
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('METODOLOGIA PARA ANÁLISE DO PONTO DE MATURAÇÃO DA LARANJA', 20, 20);
+      doc.text('UTILIZANDO NEUTRALIZAÇÃO DE NaOH COM ÁCIDO CÍTRICO', 20, 30);
+      doc.text('E CÁLCULO DO RATIO (BRIX/ACIDEZ)', 20, 40);
+      
+      // Objetivo
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('1. OBJETIVO', 20, 60);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const objetivoText = 'Determinar o grau de maturação da laranja através da relação entre o teor de sólidos solúveis (ºBrix) e a acidez total, expressa como Ratio (Brix/Acidez), em que valores mais altos indicam maior doçura e melhor ponto de maturação.';
+      const splitObjetivo = doc.splitTextToSize(objetivoText, 170);
+      doc.text(splitObjetivo, 20, 70);
+      
+      // Materiais e Reagentes
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('2. MATERIAIS E REAGENTES', 20, 95);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const materiais = [
+        '• Amostras de laranja (polpa ou suco fresco)',
+        '• Refratômetro digital (para medição de ºBrix)',
+        '• Bureta digital ou manual (precisão de 0,1 mL)',
+        '• Solução de NaOH 0,1N (padronizada)',
+        '• Indicador fenolftaleína (1%) ou pHmetro',
+        '• Água destilada',
+        '• Pipetas, béqueres e erlenmeyers'
+      ];
+      let yPos = 105;
+      materiais.forEach(item => {
+        doc.text(item, 20, yPos);
+        yPos += 7;
+      });
+      
+      // Procedimento Experimental
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('3. PROCEDIMENTO EXPERIMENTAL', 20, yPos + 10);
+      yPos += 20;
+      
+      // 3.1 Preparação da Amostra
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('3.1. PREPARAÇÃO DA AMOSTRA', 20, yPos);
+      yPos += 10;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text('1. Extrair o suco da laranja (homogeneizar a polpa, se necessário).', 20, yPos);
+      yPos += 7;
+      doc.text('2. Filtrar o suco para remover fibras e partículas sólidas.', 20, yPos);
+      yPos += 15;
+      
+      // 3.2 Medição de ºBrix
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('3.2. MEDIÇÃO DE ºBRIX', 20, yPos);
+      yPos += 10;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text('1. Calibrar o refratômetro com água destilada (ajustar para 0 ºBrix).', 20, yPos);
+      yPos += 7;
+      doc.text('2. Colocar uma gota do suco no prisma do refratômetro e registrar o valor em ºBrix.', 20, yPos);
+      yPos += 15;
+      
+      // Nova página
+      doc.addPage();
+      yPos = 20;
+      
+      // 3.3 Determinação da Acidez
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('3.3. DETERMINAÇÃO DA ACIDEZ TOTAL (ÁCIDO CÍTRICO)', 20, yPos);
+      yPos += 10;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const acidezSteps = [
+        '1. Pipetar 10 mL de suco de laranja e transferir para um erlenmeyer.',
+        '2. Adicionar 50 mL de água destilada e 2–3 gotas de fenolftaleína.',
+        '3. Titular com solução de NaOH 0,1N até a viragem para rosa persistente (pH ~8,2).',
+        '4. Anotar o volume gasto de NaOH (V).'
+      ];
+      acidezSteps.forEach(step => {
+        doc.text(step, 20, yPos);
+        yPos += 7;
+      });
+      
+      // Cálculo da Acidez
+      yPos += 5;
+      doc.setFont('helvetica', 'bold');
+      doc.text('CÁLCULO DA ACIDEZ:', 20, yPos);
+      yPos += 10;
+      doc.setFont('helvetica', 'normal');
+      doc.text('Acidez (g ácido cítrico/100 mL) = (V × N × 0,064 × 100) / Volume da amostra (mL)', 20, yPos);
+      yPos += 15;
+      doc.text('Onde:', 20, yPos);
+      yPos += 7;
+      doc.text('• V = volume de NaOH gasto (mL)', 20, yPos);
+      yPos += 7;
+      doc.text('• N = normalidade do NaOH (0,1N)', 20, yPos);
+      yPos += 7;
+      doc.text('• 0,064 = equivalente grama do ácido cítrico', 20, yPos);
+      yPos += 15;
+      
+      // 3.4 Cálculo do Ratio
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('3.4. CÁLCULO DO RATIO (ÍNDICE DE MATURAÇÃO)', 20, yPos);
+      yPos += 10;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text('Ratio = ºBrix / Acidez (g ácido cítrico/100 mL)', 20, yPos);
+      yPos += 20;
+      
+      // Interpretação dos Resultados
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('4. INTERPRETAÇÃO DOS RESULTADOS', 20, yPos);
+      yPos += 15;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const interpretacoes = [
+        '• Ratio ≥ 12: Excelente qualidade - Fruta madura e doce, ideal para consumo',
+        '• Ratio 10-12: Boa qualidade - Fruta adequada para consumo in natura',
+        '• Ratio 8-10: Qualidade regular - Fruta em processo de maturação',
+        '• Ratio < 8: Fruta imatura - Alto teor de acidez, não recomendada para consumo'
+      ];
+      interpretacoes.forEach(item => {
+        doc.text(item, 20, yPos);
+        yPos += 8;
+      });
+      
+      // Adicionar dados do cálculo se existir
+      if (ratio !== null) {
+        yPos += 10;
+        doc.setFont('helvetica', 'bold');
+        doc.text('RESULTADO DA ANÁLISE:', 20, yPos);
+        yPos += 10;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`ºBrix: ${brix}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Acidez: ${acidez} g/100mL`, 20, yPos);
+        yPos += 7;
+        doc.text(`Ratio: ${ratio.toFixed(2)}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Interpretação: ${interpretation}`, 20, yPos);
+      }
+      
+      // Salvar o PDF
+      doc.save('metodologia-analise-laranja.pdf');
+      toast.success("PDF gerado e download iniciado com sucesso!");
+      
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      toast.error("Erro ao gerar o PDF. Tente novamente.");
+    }
   };
 
   const getInterpretationColor = () => {
